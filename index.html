@@ -22,6 +22,61 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Glitter animation container */
+        .glitter-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999; /* Ensure it appears on top */
+            overflow: hidden;
+        }
+
+        /* Glitter particles */
+        .glitter {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background-color: rgba(255, 215, 0, 0.8); /* Gold color */
+            border-radius: 50%;
+            opacity: 0;
+            animation: fall 5s linear infinite, shimmer 1.5s infinite;
+        }
+
+        /* Glitter falling animation */
+        @keyframes fall {
+            0% {
+                top: -5%;
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
+        }
+
+        /* Glitter shimmering effect */
+        @keyframes shimmer {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.5);
+            }
+        }
+
+        body {
+            font-family: "Josefin Slab", serif;
+            background-color: #f9f6f2; /* Light beige background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             overflow: hidden; /* Prevent scrolling until clicked */
         }
 
@@ -173,6 +228,8 @@
     </style>
 </head>
 <body>
+    <div class="glitter-container" id="glitterContainer"></div> <!-- Glitter animation container -->
+
     <div class="title-container" onclick="showInvitation()">
         <h1>Lunch Ceremony</h1>
         <p>Sunday 24.11.24</p>
@@ -194,7 +251,7 @@
             <p><strong>Time:</strong></p>
             <p>12:00 PM</p>
             <div class="countdown" id="countdown"></div> <!-- Countdown timer -->
-            <a href="#" class="save-date-btn" id="saveDateBtn">Save the Date</a> <!-- Moved the button here -->
+            <a href="#" class="save-date-btn" id="saveDateBtn">Save the Date</a>
         </div>
         <div class="card-footer">
             <div class="icons">
@@ -202,9 +259,9 @@
                     <i class="fas fa-map-marker-alt"></i>
                 </a>
                 <a href="https://waze.com/ul?q=No.+3%2C+Jalan+Prima+2%2F4%2C+Taman+Puchong+Prima%2C+47150+Puchong%2C+Selangor" target="_blank">
-                    <i class="fab fa-waze"></i>
+                    <i class="fas fa-car"></i>
                 </a>
-                <a href="https://wa.me/60127249151" target="_blank">
+                <a href="https://wa.me/+60123456789" target="_blank">
                     <i class="fab fa-whatsapp"></i>
                 </a>
             </div>
@@ -212,36 +269,48 @@
         </div>
     </div>
 
+    <!-- Countdown Timer Script -->
     <script>
         function showInvitation() {
-            document.querySelector('.title-container').style.display = 'none';
-            const invitationCard = document.getElementById('invitationCard');
-            invitationCard.style.display = 'block';
-
-            // Trigger the animation
-            setTimeout(() => {
-                invitationCard.classList.add('open'); // Add open class to start animation
-            }, 10); // Short delay to ensure the element is displayed before the animation
-
-            startCountdown();
+            var invitationCard = document.getElementById("invitationCard");
+            invitationCard.style.display = "block";
+            setTimeout(function () {
+                invitationCard.classList.add("open");
+            }, 10); // Delay for smooth animation
         }
 
-        function startCountdown() {
-            const eventDate = new Date("2024-11-24T12:00:00Z"); // Set event date and time
-            const countdownElement = document.getElementById('countdown');
+        // Glitter falling animation
+        function createGlitter() {
+            var glitterContainer = document.getElementById("glitterContainer");
+            for (var i = 0; i < 100; i++) {
+                var glitter = document.createElement("div");
+                glitter.classList.add("glitter");
+                glitter.style.left = Math.random() * 100 + "vw"; // Random horizontal position
+                glitter.style.animationDelay = Math.random() * 5 + "s"; // Random delay
+                glitter.style.animationDuration = 3 + Math.random() * 5 + "s"; // Random fall speed
+                glitterContainer.appendChild(glitter);
+            }
+        }
 
-            setInterval(() => {
-                const now = new Date().getTime();
-                const distance = eventDate - now;
+        createGlitter();
 
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        // Countdown Timer Script
+        var countdownElement = document.getElementById("countdown");
+        var eventDate = new Date("November 24, 2024 12:00:00").getTime();
+
+        if (countdownElement) {
+            var interval = setInterval(function () {
+                var now = new Date().getTime();
+                var distance = eventDate - now;
+
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                 countdownElement.innerHTML = `
                     <strong>Countdown to the Event:</strong><br>
-                    ${days} Day(s) ${hours} Hour(s) ${minutes} Minute(s) ${seconds} Second(s)
+                    ${days} Days ${hours} Hours ${minutes} Minutes ${seconds} Seconds
                 `;
 
                 if (distance < 0) {
